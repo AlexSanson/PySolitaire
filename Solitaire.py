@@ -97,6 +97,13 @@ def is_card_lower(card_to_move, target_card):
 def suit_to_color(suit):
     return "r" if suit in {"h", "d"} else "b"
 
+def get_foundation_top(foundation_index):
+    foundation = foundations[foundation_index]
+    return foundation[-1] if foundation else slotc
+
+def update_foundation_header(foundation_index):
+    header[foundation_index] = get_foundation_top(foundation_index)
+
 def is_card_available_in_columns(card_rank_suit):
     false = 0
     rank, suit = card_rank_suit
@@ -114,6 +121,11 @@ def is_card_available_in_columns(card_rank_suit):
             continue
         if card_tuple[:3] == (rank, suit, color):
             return True
+        for foundation in foundations:
+            if not foundation:
+                continue
+            if foundation[-1][:3] == (rank, suit, color):
+                return True
     return False
 
 def add():
@@ -167,7 +179,17 @@ def move_card(card_to_move, target_card):
     global trash
     if card_to_move == "d":
         return "d"
-    if card_to_move in header:
+    if card_to_move in [foundation[-1] for foundation in foundations if foundation]:
+        for foundation_index, foundation in enumerate(foundations):
+            if foundation and foundation[-1] == card_to_move:
+                moving_cards = [card_to_move]
+                foundation.pop()
+                update_foundation_header(foundation_index)
+                break
+        else:
+            print("Error cannot move card.")
+            return False
+    elif card_to_move in header:
         header_index = header.index(card_to_move)
         moving_cards = [card_to_move]
         trash.pop() if trash else None
@@ -200,10 +222,10 @@ def move_card(card_to_move, target_card):
     return False
 
 def can_place_on_foundation(card_tuple, foundation_index):
-    top_card = foundations[foundation_index]
+    top_card = get_foundation_top(foundation_index)
     if card_tuple[0] == "A":
-        for idx, foundation_card in enumerate(foundations):
-            if idx != foundation_index and foundation_card[:2] == ("A", card_tuple[1]):
+        for idx, foundation in enumerate(foundations):
+            if idx != foundation_index and foundation and foundation[0][:2] == ("A", card_tuple[1]):
                 return False
     if top_card == slotc or top_card == blankc:
         return card_tuple[0] == "A"
@@ -221,8 +243,8 @@ def move_card_to_foundation(card_to_move, foundation_index):
         header_index = header.index(card_to_move)
         trash.pop() if trash else None
         header[header_index] = trash[len(trash)-1] if trash else slotc
-        foundations[foundation_index] = card_to_move
-        header[foundation_index] = card_to_move
+        foundations[foundation_index].append(card_to_move)
+        update_foundation_header(foundation_index)
         return True
     for column in columns:
         if card_to_move in column:
@@ -238,8 +260,8 @@ def move_card_to_foundation(card_to_move, foundation_index):
                 replacement_card = replace()
                 if replacement_card is not None:
                     column[-1] = replacement_card
-            foundations[foundation_index] = card_to_move
-            header[foundation_index] = card_to_move
+            foundations[foundation_index].append(card_to_move)
+            update_foundation_header(foundation_index)
             return True
     print("Error cannot move card.")
     wait(2)
@@ -287,8 +309,8 @@ def move_card_to_empty_column(card_to_move, column_index):
 if debug == 1:
     print(card_list)
     print(cards_left)
-foundations = [slotc, slotc, slotc, slotc]
-header = [foundations[0], foundations[1], foundations[2], foundations[3], '', slotc, blankc]
+foundations = [[], [], [], []]
+header = [get_foundation_top(0), get_foundation_top(1), get_foundation_top(2), get_foundation_top(3), '', slotc, blankc]
 columns = [
     [add()],
     [blankc, add()],
@@ -311,7 +333,7 @@ if debug == 1:
 first = 0
 def card_input():
     global first
-    if foundations[0] == ("K", "s", "b") and foundations[1] == ("K", "h", "r") and foundations[2] == ("K", "d", "r") and foundations[3] == ("K", "c", "b"):
+    if get_foundation_top(0) == ("K", "s", "b") and get_foundation_top(1) == ("K", "h", "r") and get_foundation_top(2) == ("K", "d", "r") and get_foundation_top(3) == ("K", "c", "b"):
         print("Congratulations! You won!")
         exit()
     print("# -------------------------------------------------------------------------------------------------------------------------------- #")
