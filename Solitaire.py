@@ -3,7 +3,6 @@ from time import sleep as wait
 import io
 import sys
 
-from numpy import rint
 from CardPrinter import card, card_dict
 
 global cards_left
@@ -326,6 +325,15 @@ def card_input():
         if card1.lower() == "d":
             header[len(header)-2] = draw()
             return "d", None
+        if card1.lower() == "wheredidmycardgo":
+            print("Debug info:")
+            print("Header:", header)
+            print("Foundations:", foundations)
+            print("Columns:")
+            for i, column in enumerate(columns):
+                print(f"Column {i+1}:", column)
+            print("Assigned blanks:", assigned_blanks)
+            continue
         elif len(card1.lower()) < 2 and not card1.startswith("10"):
             print("Invalid input. Please try again.")
             wait(2)
