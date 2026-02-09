@@ -201,6 +201,10 @@ def move_card(card_to_move, target_card):
 
 def can_place_on_foundation(card_tuple, foundation_index):
     top_card = foundations[foundation_index]
+    if card_tuple[0] == "A":
+        for idx, foundation_card in enumerate(foundations):
+            if idx != foundation_index and foundation_card[:2] == ("A", card_tuple[1]):
+                return False
     if top_card == slotc or top_card == blankc:
         return card_tuple[0] == "A"
     if top_card[1] != card_tuple[1]:
