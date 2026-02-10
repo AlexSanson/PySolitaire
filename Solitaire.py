@@ -11,7 +11,7 @@ global ab_length
 global assigned_blanks
 global trash
 
-debug = 1 # Adds aditional print info if set to 1
+debug = 0 # Adds aditional print info if set to 1
 
 card_list = list(card_dict.values())
 cards_left = len(card_list)
@@ -483,4 +483,5 @@ while True:
         move_card(*move_result)
     
     
+
 
