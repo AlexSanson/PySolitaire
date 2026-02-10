@@ -11,7 +11,7 @@ global ab_length
 global assigned_blanks
 global trash
 
-debug = 0 # Adds aditional print info if set to 1
+debug = 1 # Adds aditional print info if set to 1
 
 card_list = list(card_dict.values())
 cards_left = len(card_list)
@@ -320,7 +320,7 @@ columns = [
     [blankc, blankc, blankc, blankc, blankc, add()],
     [blankc, blankc, blankc, blankc, blankc, blankc, add()]
 ]
-assigned_blanks = [add() for _ in range(21)]
+assigned_blanks = [add() for _ in range(24)]
 ab_length = len(assigned_blanks)
 
 if debug == 1:
@@ -359,6 +359,7 @@ def card_input():
             for i, column in enumerate(columns):
                 print(f"Column {i+1}:", column)
             print("Assigned blanks:", assigned_blanks)
+            print("Leftover cards:", card_list)
             continue
         elif len(card1.lower()) < 2 and not card1.startswith("10"):
             print("Invalid input. Please try again.")
