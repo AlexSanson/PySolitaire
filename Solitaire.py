@@ -11,6 +11,8 @@ global ab_length
 global assigned_blanks
 global trash
 
+# Reminder, fix draw pile ------------------------------------------------------------- !!!!!!!!
+
 debug = 0 # Adds aditional print info if set to 1
 
 card_list = list(card_dict.values())
@@ -333,7 +335,7 @@ if debug == 1:
 first = 0
 def card_input():
     global first
-    if get_foundation_top(0) == ("K", "s", "b") and get_foundation_top(1) == ("K", "h", "r") and get_foundation_top(2) == ("K", "d", "r") and get_foundation_top(3) == ("K", "c", "b"):
+    if all(len(foundation) == 13 for foundation in foundations):
         print("Congratulations! You won!")
         exit()
     print("# -------------------------------------------------------------------------------------------------------------------------------- #")
@@ -483,5 +485,4 @@ while True:
         move_card(*move_result)
     
     
-
 
