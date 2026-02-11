@@ -11,9 +11,8 @@ global ab_length
 global assigned_blanks
 global trash
 
-# Reminder, fix draw pile ------------------------------------------------------------- !!!!!!!!
-
 debug = 0 # Adds aditional print info if set to 1
+message_time = 1
 
 card_list = list(card_dict.values())
 cards_left = len(card_list)
@@ -139,7 +138,7 @@ def add():
         return card_to_add
     else:
         print("Error: Failed to add card.")
-        wait(2)
+        wait(message_time)
         return None
 
 trash = []
@@ -174,7 +173,7 @@ def replace(selected_card=None):
     if selected_card is not None:
         return selected_card
     print("No more cards left to replace.")
-    wait(2)
+    wait(message_time)
     return None
 
 def move_card(card_to_move, target_card):
@@ -220,7 +219,7 @@ def move_card(card_to_move, target_card):
             return True
 
     print("Target card not found in columns.")
-    wait(2)
+    wait(message_time)
     return False
 
 def can_place_on_foundation(card_tuple, foundation_index):
@@ -239,7 +238,7 @@ def move_card_to_foundation(card_to_move, foundation_index):
     global trash
     if not can_place_on_foundation(card_to_move, foundation_index):
         print("Invalid move. Foundation piles stack from Ace to King by suit.")
-        wait(2)
+        wait(message_time)
         return False
     if card_to_move in header:
         header_index = header.index(card_to_move)
@@ -253,7 +252,7 @@ def move_card_to_foundation(card_to_move, foundation_index):
             card_index = column.index(card_to_move)
             if card_index != len(column) - 1:
                 print("Invalid move. Only the top card can move to foundation.")
-                wait(2)
+                wait(message_time)
                 return False
             column.pop()
             if len(column) == 0:
@@ -266,7 +265,7 @@ def move_card_to_foundation(card_to_move, foundation_index):
             update_foundation_header(foundation_index)
             return True
     print("Error cannot move card.")
-    wait(2)
+    wait(message_time)
     return False
 
 def is_column_empty(column_index):
@@ -277,11 +276,11 @@ def move_card_to_empty_column(card_to_move, column_index):
     global trash
     if card_to_move[0] != "K":
         print("Invalid move. Only kings can move to empty columns.")
-        wait(2)
+        wait(message_time)
         return False
     if not is_column_empty(column_index):
         print("Invalid move. Column is not empty.")
-        wait(2)
+        wait(message_time)
         return False
     if card_to_move in header:
         header_index = header.index(card_to_move)
@@ -303,7 +302,7 @@ def move_card_to_empty_column(card_to_move, column_index):
                 break
         else:
             print("Error cannot move card.")
-            wait(2)
+            wait(message_time)
             return False
     columns[column_index] = moving_cards
     return True
@@ -352,6 +351,10 @@ def card_input():
         card1 = input("Card to move: ")
         if card1.lower() == "d":
             header[len(header)-2] = draw()
+            if len(assigned_blanks) == 0:
+                header[len(header)-1] = slotc
+            else:
+                header[len(header)-1] = blankc
             return "d", None
         if card1.lower() == "wheredidmycardgo":
             print("Debug info:")
@@ -365,23 +368,23 @@ def card_input():
             continue
         elif len(card1.lower()) < 2 and not card1.startswith("10"):
             print("Invalid input. Please try again.")
-            wait(2)
+            wait(message_time)
             continue
         card2 = input("Card to move onto: ")
         if len(card2.lower()) < 2 and not card2.startswith("10"):
             print("Invalid input. Please try again.")
-            wait(2)
+            wait(message_time)
             continue
         parsed_card1 = parse_card_input(card1)
         if parsed_card1 is None:
             print("Invalid input. Please try again.")
-            wait(2)
+            wait(message_time)
             continue
         foundation_index = parse_foundation_input(card2)
         if foundation_index is not None:
             if not is_card_available_in_columns(parsed_card1):
                 print("Invalid move. The card you want to move is not in the columns.")
-                wait(2)
+                wait(message_time)
                 continue
             parsed_card1 = add_color_to_card(parsed_card1)
             return "foundation", parsed_card1, foundation_index
@@ -389,36 +392,36 @@ def card_input():
         if column_index is not None:
             if not is_card_available_in_columns(parsed_card1):
                 print("Invalid move. The card you want to move is not in the columns.")
-                wait(2)
+                wait(message_time)
                 continue
             parsed_card1 = add_color_to_card(parsed_card1)
             return "empty_column", parsed_card1, column_index
         parsed_card2 = parse_card_input(card2)
         if parsed_card2 is None:
             print("Invalid input. Please try again.")
-            wait(2)
+            wait(message_time)
             continue
         if is_draw_slot(parsed_card2):
             print("Invalid move. You cannot move cards onto the draw pile.")
-            wait(2)
+            wait(message_time)
             continue
         suit1 = parsed_card1[1]
         suit2 = parsed_card2[1]
         if not is_card_lower(parsed_card1, parsed_card2):
             print("Invalid move. The card you move must be lower than the target card.")
-            wait(2)
+            wait(message_time)
             continue
         if (suit1 in {"h", "d"} and suit2 in {"h", "d"}) or (suit1 in {"c", "s"} and suit2 in {"c", "s"}):
             print("Invalid move. Cards must be of opposite suit colors.")
-            wait(2)
+            wait(message_time)
             continue
         if not is_card_available_in_columns(parsed_card1):
             print("Invalid move. The card you want to move is not in the columns.")
-            wait(2)
+            wait(message_time)
             continue
         if not is_card_available_in_columns(parsed_card2):
             print("Invalid move. The target card is not in the columns.")
-            wait(2)
+            wait(message_time)
             continue
         parsed_card1 = add_color_to_card(parsed_card1)
         parsed_card2 = add_color_to_card(parsed_card2)
